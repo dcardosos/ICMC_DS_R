@@ -1,5 +1,6 @@
 # Preparação e Transformação dos dados
 library(magrittr)
+library(patchwork)
 library(tidymodels)
 
 iris_error <- readr::read_csv('dados/iris-with-errors.csv',
@@ -180,3 +181,106 @@ iris_normal %>%
 ### Cuidar de outliers
 ### step_spatialsign(), step_BoxCox() and step_YeoJohnson()
 
+
+
+## Exercicios de fixação -------------------------------------------------
+
+# Leia os dados com erro novamente, faça a limpeza e remova as duas últimas colunas.
+iris_error %>% 
+  tidyr::drop_na() %>% 
+  dplyr::distinct() %>% 
+  dplyr::select(-species, -petal_width)
+
+# insira a mediana de cada atributo onde for encontrada NaN.
+iris_error %>% 
+  recipe(species ~ .) %>% 
+  step_impute_median(all_numeric_predictors()) %>% 
+  prep() %>% 
+  bake(new_data = NULL)
+
+# com Iris, mostre a distribuição de probabilidades de cada uma das variáveis 
+# após a normalização e padronização.
+prep_bake <- function(receita){ 
+  receita %>% 
+    recipes::prep() %>% 
+    recipes::bake(new_data = NULL)
+  }
+
+## original
+iris_normal %>% 
+  tidyr::pivot_longer(sepal_length:petal_width, 
+                      names_to = 'parte', 
+                      values_to = 'medida') %>% 
+  ggplot(aes(medida, color = parte, fill = parte)) +
+  geom_density() +
+  facet_wrap(~ parte) +
+  theme_minimal() +
+  labs(x = "", 
+       title = "Distribuição de probabilidades das variáveis",
+       subtitle = "Antes da normalização ou padronização") 
+
+## normalização linear 
+iris_normal %>% 
+  dplyr::mutate( dplyr::across(is.double, ~ step_minmax(.x))) %>% 
+  tidyr::pivot_longer(sepal_length:petal_width, 
+                      names_to = 'parte', 
+                      values_to = 'medida') %>% 
+  ggplot(aes(medida, color = parte, fill = parte)) +
+  geom_density() +
+  facet_wrap(~ parte) +
+  theme_minimal() +
+  labs(x = "",
+       title = "Distribuição de probabilidades das variáveis",
+       subtitle = "Após normalização linear") 
+
+## normalização z-score
+iris_normal %>% 
+  recipe(species ~ .) %>% 
+  step_normalize(all_numeric_predictors()) %>%
+  prep_bake() %>% 
+  tidyr::pivot_longer(sepal_length:petal_width, 
+                      names_to = 'parte', 
+                      values_to = 'medida') %>% 
+  ggplot(aes(medida, color = parte, fill = parte)) +
+  geom_density() +
+  facet_wrap(~ parte) +
+  theme_minimal() +
+  labs(x = "",
+       title = "Distribuição de probabilidades das variáveis",
+       subtitle = "Após normalização com z-score")
+
+# Monte um boxplot para cada variável dos dados da Iris.
+iris_normal %>% 
+  tidyr::pivot_longer(sepal_length:petal_width, 
+                      names_to = 'parte', 
+                      values_to = 'medida') %>% 
+  ggplot(aes(medida, color = parte)) +
+  geom_boxplot() +
+  facet_wrap(~parte) +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  labs(x = '', title = 'Boxplot das medidas das variáveis')
+
+# Encontre os outliers nos dados das bases Iris e BostonHouse.
+housing %>% 
+  tidyr::pivot_longer(crim:medv, 
+                      names_to = 'variavel', 
+                      values_to = 'valores') %>% 
+  ggplot(aes(valores)) +
+  geom_boxplot() +
+  facet_wrap(~variavel) +
+  theme_minimal()
+
+
+## remove outliers
+housing %>% 
+  tidyr::pivot_longer(crim:medv, 
+                      names_to = 'variavel', 
+                      values_to = 'valores') %>% 
+  dplyr::group_by(variavel) %>% 
+  dplyr::summarise(out = list(boxplot.stats(valores)$out %>% as_tibble())) %>% 
+  dplyr::mutate('in' = purrr::map(.x = out,
+                                  .f = ~ .x %$% ))
+
+
+boxplot.stats(housing$b)$out %>% as_tibble() %>% list()
