@@ -239,3 +239,35 @@ tibble::tibble(
   
   purrr::pluck('add_title') %>% 
   purrr::reduce(`+`)
+
+
+
+
+tibble::tibble(
+  x = seq(from = 0, to = 50000, , by = 1),
+  z = log(x)) %>%
+  ggplot(aes(x, z)) +
+  geom_line(color = '#C44E52') +
+  theme_minimal() +
+  labs(x = 'X', y = 'Log(X)')
+
+
+tibble::tibble(
+  x = seq(from = 1, to = 50000, , by = 1),
+  z = log(x)) %>% 
+  dplyr::summarise(pearson = stats::cor(x, z),
+                   spearman = stats::cor(x, z, method = 'spearman')) 
+
+# 1 - Gere dados a partir de uma distribuição de Poisson. Varie a taxas λ
+# no intervalo [1,10] e mostre o gráfico da média em função da variância.
+
+
+
+# 2 - Considere os dados da Iris. Calcule a média, variância e IQR para cada atributo.
+# 
+# 3 - Obtenha o boxplot de todas as variáveis da flor Iris, para cada espécie.
+# 
+# 4 - Para a função log(), investigue como as correlações de Pearson e Spearman variam de acordo com o intervalo dos dados.
+# 
+# 5 - Considere o código acima que mostra como a correlação de Pearson muda com a inclusão de ruídos. Modifique a função para Y=0.5∗X+
+#   ruído. Varie o ruído e calcule os coeficientes de Pearson e Spearman, mostrando os respectivos scatterplots com os valores dos coeficientes (como feito no exemplo).

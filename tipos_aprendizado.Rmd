@@ -1,0 +1,78 @@
+---
+title: "Tipos de aprendizado"
+author: "Douglas Cardoso"
+date: "9/7/2021"
+header-includes:
+    - \usepackage[shortlabels]{enumitem}
+    - \usepackage[brazilian]{babel} # idioma
+    - \usepackage[utf8]{inputenc}  # acento
+    - \usepackage{amssymb}
+    
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Aprendizado supervisionado
+
+Os dados são divididos em:
+
+- Conjunto de treinamento
+  - Treinamento
+  - Validação
+- Conjunto de teste
+  - Teste
+  
+No conjunto de treinamento, o modelo é treinado, com um algoritmo de aprendizado, isso torna-se um modelo que é validado no conjunto de teste.
+  
+  
+## Modelo preditivo
+
+Matematicamente, é uma função $y = f(X) + \epsilon$, onde $\epsilon$ é um erro.
+
+### Classificação
+
+Dado um conjunto de observações $D = \{X_i, y\epsilon\}, i = 1, ..., N$
+
+- $f(.)$ representa uma função desconhecida (função objetivo): $y_i = f(X_i, \theta) + \epsilon_i$
+
+- A função mapeia as entradas nas saídas correspondentes, assim o algoritmo aprende a aproximação que permite estimar os valores de $f(.)$ para novos valores de $X$:
+
+$$
+y_i \in \{C_1, C_2, ..., C_n\}
+$$
+
+### Regressão
+
+A única diferença na regressão é que o que quero prever é um valor real, ou seja
+
+$$
+y_i \in \mathbb{R} 
+$$
+
+## Ingredientes de muitos problemas de Aprendizado de Máquina
+
+- 1. Um conjunto de dados $D = (X, y)$, onde $X$ é uma matriz de variáveis independentes e $y$ é o vetor de variáveis dependentes;
+- 2. Modelo $f(x, \theta)$, onde $f$ é uma função $f: x \rightarrow y$ dos parâmetros $\theta$;
+- 3. Função custo $C(y, f(X; \theta))$, que calcula a qualidade do modelo, o quão adequado ele é para predizer valores de $y$
+
+Não existe um modelo que seja geral para todos os tipos de dados. Memorização é diferente de aprendizado. 
+
+# Aprendizado não-supervisionado (modelos descritivos)
+
+Não temos informação sobre a classe, por exemplo, o agrupamento. O objetivo é agrupar um conjunto de objetos de acordo com a similaridade entre eles. Há diversas formas de definir a similaridade. A clusterização se dá minimizando a distância intra-cluster e maximizando a distância inter-cluster.
+
+## Estágios
+- Seleção dos atributos
+- Medida de proximidade
+- Critério de clusterização: alguma função de custo
+- Algoritmo de clusterização
+- Validação dos resultados
+- Interpretação dos resultados
+
+# Aprendizado com reforço
+
+Interferimos no algoritmo atribuindo uma recompensa toda vez que ele acertar uma data tarefa. 
