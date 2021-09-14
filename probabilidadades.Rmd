@@ -1,0 +1,336 @@
+---
+title: "Probabilidade"
+author: "Douglas Cardoso"
+date: "9/8/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Modelos probabilísticos
+
+Saídas de cada experimento parecem imprevisíveis, mas quando aumentamos muito o número de experimentos, surge um padrão que nos permite calcular as probabilidades, que é uma função matemática.
+
+# Conceitos fundamentais
+
+- **Espaço amostral ($\Omega$)**:  conjunto de saídas do experimento - todas as saídas possíveis.
+- **Evento ($A$)**: um elemento do espaço amostral - subconjunto de $\Omega$.
+  - Evento impossível: $\emptyset$
+  - Evento certo:  $\Omega$
+  - $A \cup B$: evento ocorre se A, ou B (ou ambos), ocorrem
+  - $A \cap B$: evento ocorre se, e somente se, A e B ocorrem
+
+## Exemplos
+Sejam A e B dois eventos em um mesmo espaço amostral.
+
+(i) Pelo menos um dos eventos ocorre.
+$$ 
+A \cup B
+$$
+
+(ii) O evento A ocorre, mas B não ocorre
+$$
+A \cap \bar{B}
+$$
+
+(iii) Nenhum deles ocorre
+$$
+\bar{A} \cap \bar{B}
+$$
+
+
+## Probabilidade da união de eventos
+
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
+
+O $P(A \cap B)$ é retirado porque é a parte em que os eventos A e B se intersectam, ou seja, se não retirasse estaria contando duas vezes. 
+
+Matematicamente:
+$$
+P(A \cup B) = P(A \cap B^c) + P(A \cap B) + P(A^c \cap B)
+$$
+$$
+P(A \cup B) = P(A) - P(A \cap B) + P(A \cap B) + P(B) - P(A \cap B)
+$$
+portanto, 
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
+
+
+# Probabilidade Condicional e Indepedência
+
+Eventos se influenciam mutuamente, e dado que um evento aconteceu, isso influencia na probabilidade de outro evento.
+
+## Condicional
+
+Qual a probabilidade de A acontecer tendo acontecido B?
+$$
+P(A \mid B) = \frac{P(A \cap B)}{P(B)},\ P(B) > 0
+$$
+
+### Exemplo
+Calcule $P(A \mid B)$ onde:
+- $\Omega = \{1,2,3,...,15\}$
+- $A = \{\omega \in \Omega \mid \omega\ is\ even \}$
+- $B = \{\omega \in \Omega \mid \omega > 5 \}$
+
+Os conjuntos ficariam da seguinte forma:
+
+- A: {2, 4, 6, 8, 10, 12, 14}
+- B: {6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+- $A \cap B$: {6, 8, 10, 12, 14}
+- Fora de ambos: {1, 3, 5}
+
+Dessa forma:
+
+- $P(A) = \frac{7}{15}$
+
+- $P(B) = \frac{10}{15}$
+
+- $P(A \cap B) = \frac{5}{15}$
+
+Assim:
+
+$$
+P(A \mid B) = \frac{\frac{5}{15}}{\frac{10}{15}}
+$$
+
+
+$$
+P(A \mid B) =\frac{5}{15} \times \frac{15}{10} = \frac{5}{10} = \frac{1}{2}
+$$
+
+## Independência
+
+A e B são independentes se, e somente se, 
+$$
+P (A \cap B) = P(A)P(B)
+$$
+
+Isso ocorre porque $P(A \mid B) = P(A) = \frac{P(A \cap B)}{P(B)} = P (A \cap B) = P(A)P(B)$
+
+Para verificar se são indepedentes, basta verificar se $P(A \cap B)$ é igual a $P(A)P(B)$.
+
+## Demonstração da probabilidade condicional
+
+Seja $\omega \in \Omega$ e $B \in \Omega$, ou seja, $\omega$ e $B$ em um mesmo espaço amostral. Para entender, pense em um dado e que B é a chance de um número ser par. 
+
+- (i) Se $\omega \in B$, então $P(\omega \mid B) = \alpha\ P(B)$
+- (ii) Se $\omega \notin B$, então $P(\omega \mid B) = 0$
+
+Assim, o somatório entre essas partes precisa ser igual a 1:
+$$
+\sum_{\omega \in B} P(\omega \mid B) + \sum_{\omega \notin B} P(\omega \mid B) = 1
+$$
+
+Trocando na fórmula, teremos:
+$$
+\sum_{\omega \in B} \alpha \ P(\omega) = 1
+$$
+
+Assim, sendo $\alpha$ uma constante, podemos isolá-la. Como estou somando todos os valores de $B$, então estou considerando todos os valores do dado que pode ser par, ou seja, estou pegando a probabilidade do número ser par, por isso $P(B)$.
+$$
+\alpha = \frac{1}{\sum_{\omega \in B} P(\omega)} = \frac{1}{P(B)}
+$$
+Assim:
+$$
+P(\omega \mid B) = \alpha\ P(B) = \frac{P(\omega)}{P(B)}
+$$
+
+Podemos então pensar em, pegando um evento $A$ qualquer:
+
+$$
+P(A \mid B) = \sum_{\omega \in A \cap B} P(\omega \mid B) + \sum_{w \notin A \cap B} P(\omega \mid B)
+$$
+Nós cortamos o segundo termo, porque ele é igual 0. Como estamos somando sobre todos os $\omega$ que pertecem a $A \cap B$, $P(\omega) = P(A \cap B)$. 
+
+$$
+= \sum_{\omega \in A \cap B} \frac{P(\omega)}{P(B)} = \frac{P(A \cap B)}{P(B)}
+$$
+
+# Teorema da Probabilidade Total 
+## Partição do espaço amostral
+
+Definição: $B_1, B_2, ..., B_n$ formam uma partição do espaço amostral se:
+
+- $B_i \cap B = \emptyset$: intersecção entre eles for igual a um conjunto vazio, não tem sobreposição
+
+- $\cup_{i = 1}^n B_i = \Omega$: união entre todos eles formam o espaço amostral
+
+- $P(B_i) \geq 0, i = 1, ..., n$: probabilidades de ocorrência de cada um deles é maior ou igual a zero
+
+A partição do espaço amostral é como se fosse peça de quebra-cabeças. Por exemplo:
+
+> Seja um evento $A$ no espaço amostral $\Omega$ e seja $B_1, B_2, ..., B_n$ uma partição amostral de $\Omega$. Podemos escrever $A$ considerando tal partição:
+
+$$
+A = \cup_{i=1}^n A \cap B_i
+$$
+Que significa que $A$ é a união de todas as intersecções de $Bi$. Se fôssemos aplicar as probabilidades teríamos que
+
+$$
+P(A) = P(\cup_{i=1}^n A \cap B_i)
+$$
+Podemos notar que os elementos $A \cap B_i$ são mutuamente exclusivos, ou seja, são independentes. Assim:
+
+$$
+(A \cap B_i) \cap (A \cap B_j) = \emptyset, i \neq j
+$$
+
+Como são disjuntos, a probabilidade da união vira a soma das probabilidades:
+$$
+P(A) = P(\cup_{i=1}^n A \cap B_i) = \sum{i=1}^n P(A \cap B_i)
+$$
+
+A expressão $P(A \cap B_i)$ nos lembra do numerador da equação de probabilidade condicional, que, passada para o outro lado, nos oferece uma igualdade
+
+$$
+P(A \mid B_i) = \frac{P(A \cap B_i)}{P(B_i)}
+$$
+$$
+P(A \mid B_i) P(B_i) = P(A \cap B_i)
+$$
+
+Portanto, temos nosso Teorema da Probabilidade total:
+
+$$
+P(A) = \sum_{i=1}^n P(A \mid B_i) P(B_i)
+$$
+
+# Teorema de Bayes
+
+Thomas Bayes desenvolveu uma nova forma de calcular probabilidades. A ideia dele era que probabilidades podem ser atualizadas com a observação de novos dados. A formulação matemática, publicada por Laplace, é:
+
+$$
+P(B_i \mid A) = \frac{P(A \mid B_i) P(B_i)}{\sum_{j} P(A \mid B_j) P(B_j)}, \ i = 1, 2, ...
+$$
+Esse é um dos mais importantes da Teoria de Probabilidade. 
+
+Vimos que $P(B_i \mid A) = \frac{P(A \cap B_i)} {P(A)}$, e sabemos que:
+
+$$
+P(A \mid B) P(B) = P(A \cap B) = P(B \cap A) = P(B \mid A) P(A) = P(A \mid B) P(B) 
+$$
+
+Assim, o numerador de nosso teorema fica como $P(A \mid B_i) P(B_i)$. O denominador é a equação da Teoria da Probabilidade geral.
+
+## Termos
+
+- $P(B_i \mid A)$: Probabilidade *a posteriori*
+
+- $P(A \mid B_i)$: Verossimilhança
+
+- $P(B_i)$: *priori*, conhecimento que tenho sobre o problema
+
+- $\sum_{j} P(A \mid B_j) P(B_j)$: Evidência, que é uma constante normalizadora
+
+
+
+
+
+
+
+
+
+
+# Exercícios
+
+1. Moedas de ouro são colocadas em 3 urnas com 12 moedas. A urna I possue 4 moedas de ouro, a II possue 3 moedas de ouro e a III possue 6 moedas de ouro. Todas as urnas possuem a mesma probabilidade: $P(I) = 1/3, P(II) = 1/3, P(III) = 1/3$. Qual é a probabilidade de se escolher uma moeda de ouro?
+
+2. A probabilidade do time A perder é de 1/4; a probabilidade do treinador ser trocado dado que o time A perdeu é 9/10, e a probabilidade do treinador ser trocado dado que o time A ganhou é 3/10. Qual é a probabilidade do time A perder dado que seu treinador foi trocado?
+
+3. Considere duas urnas. A primeira contém duas bolas brancas e sete bolas pretas e a segunda contém cinco bolas brancas e seis pretas. Nós lançamos uma moeda e retiramos uma bola da primeira ou da segunda urna, dependendo do resultado do lançamento, isto é, cara (urna 1) ou coroa (urna 2). Qual é a probabilidade condicional de que o resultado do lançamento da moeda foi cara, dado que uma bola branca foi retirada?
+
+4. Um suspeito foi preso e o delegado está 60% convencido de que o suspeito é o assaltante procurado. Uma nova prova revela que o assaltante é tatuado, permitindo assim que o delegado atualize seu nível de certeza sobre a cupabilidade do acusado. Assim, se 20% da população usa tatuagem, quão certo ficará o delegado de que o suspeito é culpado após descobrir que este é tatuado?
+
+# Gabarito
+**1. 0,36**
+Sabendo que A = "Escolha uma moeda de ouro", temos:
+$$
+P(A) = P(A \cap I) + P(A \cap II) + P(A \cap III) = P(A \mid I) P(I) + P(A \mid II) P(II) + P(A \mid III) P(III)
+$$
+
+Sabemos que:
+
+- $P(A \mid I) = \frac{4}{12}$
+
+- $P(A \mid II) = \frac{3}{12}$
+
+- $P(A \mid III) = \frac{6}{12}$
+
+Com isso, temos a equação final com as probabilidades de cada urna dada no enunciado:
+
+$$
+P(A) = \frac{4}{12} \times \frac{1}{3} + \frac{3}{12} \times \frac{1}{3} + \frac{6}{12} \times \frac{1}{3} = 0,36
+$$
+**2. 1/2**
+
+$$
+P(loss) = \frac{1}{4};\ P(replacement \mid loss) = \frac{9}{10};\ P(replacement \mid win) = \frac{3}{10}
+$$
+
+$$
+P(loss \mid replacement) = \frac{P(loss \cap replacement)}{P(replacement)}
+$$
+
+$$
+P(loss \mid replacement) = \frac{P(replacement \mid loss) \times P(loss)}{P(replacement \mid loss) P(loss) + P(replcamente \mid win) P(win)}
+$$
+
+$$
+P(loss \mid replacement) = \frac{(9/10) \times (1/4)}{(9/10)(1/4) + (3/10)(3/4)}
+$$
+
+$$
+P(loss \mid replacement) = \frac{1}{2}
+$$
+
+
+**3. 22/67**
+
+Primeiramente, definimos os dois eventos que estão acontecendo:
+
+A = "Lançamento foi cara" e B = "Bola branca retirada".
+
+O que queremos saber é $P(A \mid B)$, então, temos:
+
+$$
+P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}
+$$
+
+$$
+= \frac{P(B \mid A) P(A)}{P(B \cap A) + P(B \cap \bar(A))}
+$$
+
+$$
+= \frac{P(B \mid A) P(A)}{P(B \mid A) P(A) + P(B \mid \bar(A)) P(\bar(A))}
+$$
+
+$$
+P(A \mid B) = \frac{2/9 \times 1/2}{2/9 \times 1/2 + 5/11 \times 1/2}
+$$
+
+$$
+P(A \mid B) = \frac{22}{67}
+$$
+ 
+**4. 0,88**
+Definimos os eventos A e B:
+
+A = "O suspeito é culpado"; B = "O suspeito é tatuado"
+
+Queremos saber: $P(A \mid B)$.
+
+$$
+P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)} = \frac{P(B \mid A) P(A)}{P(B \mid A) P(A) + P(B \mid A^c) P(A^c)}
+$$
+Lembre-se que $A^c$ é o contrário do evento $A$, ou seja, o suspeito é inocente.
+
+$$
+P(A \mid B) = \frac{(1 \times 0,6)}{(1 \times 0,6) + (0,2 \times 0,6)} = 0,88 
+$$
