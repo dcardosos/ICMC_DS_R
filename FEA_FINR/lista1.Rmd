@@ -1,7 +1,13 @@
 ---
 title: "Lista de Treinamento 1"
-author: "Douglas Cardoso"
+author: "Douglas Cardoso - 11766990"
 date: "9/11/2021"
+header-includes:
+    - \usepackage[shortlabels]{enumitem}
+    - \usepackage[brazilian]{babel} # idioma
+    - \usepackage[utf8]{inputenc}  # acento
+    - \usepackage{amsmath}
+    
 output: pdf_document
 ---
 
@@ -44,5 +50,171 @@ X <- matrix(
 # (vi)
 Z <- matrix(
   data = c(4, 2, 8, -1, -3, -7, 6, 0.4, -9, 10, 11, 12),
-  ncol = 3, nrow = 4, byrow = TRUE) 
+  ncol = 3, nrow = 4, byrow = TRUE)
+
+# (vii)
+W <- matrix(
+  data = c(-2, 8, 10, 0, -1, 3, 8, 12, 31, -8, 0.4, 32, 10, -2, -2,
+           0.9, -66, 12, 98, 0, 9, -7, 0.22, 4, -33),
+  ncol = 5, nrow = 5, byrow = TRUE)
+
+# (viii)
+K <- matrix(
+  data = c(-2, 6, -1, 0, 14, 10, 0.5, -44),
+  ncol = 2, nrow = 4, byrow = TRUE)
+
+# (ix)
+G <- matrix(
+  data = c(-3, 8, 0.3, 19, 13, -17, 0.1, 0.2, -0.3),
+  ncol = 3, nrow = 3, byrow = TRUE)
 ```
+
+## Q3 - Com base nas variáveis criadas na questão 2, realize as seguintes operações, elemento a elemento:
+
+- (i) $t \times v$ 
+
+```{r} 
+t * v
+```
+
+- (ii) $u / u$ 
+```{r} 
+u/u
+```
+
+- (iii) $t \times p - v$
+
+```{r} 
+(t * p) - v
+```
+
+- (iv) $X \times Z$
+
+```{r error = TRUE} 
+X * Z
+```
+
+- (v) $W^2$
+
+```{r} 
+W^2
+```
+
+- (vi) $Z \times Z$
+
+```{r} 
+Z * Z
+```
+
+## Q4 - Com base nas variáveis  criadas na questão 2, realize as operações vetoriais/matriciais abaixo. Em caso de não realização da operação, entenda a motivação do erro. Além disso, os subscritos "T" e "-1" indicam matriz/vetor transposta e inversa, respectivamente. $I_n$ indica a matriz identidade de ordem $n$. Em caso de erro, entenda a motivação para tal. 
+
+- (i) $v \times u$
+
+```{r} 
+v * u
+```
+
+- (ii) $v \times v$  (produto interno)
+
+```{r} 
+v %*% v
+```
+
+- (iii) $v \times p^T$
+
+```{r} 
+
+v * t(p)
+```
+
+- (iv) $X \times X^T$
+
+```{r error = TRUE} 
+X * t(X)
+```
+
+- (v) $Z \times G$
+
+```{r error = TRUE} 
+Z * G
+```
+
+- (vi) $G^{-1} G$
+
+```{r} 
+solve(G) %*% G
+```
+
+- (vii) $K^{-1} G$
+
+```{r error = TRUE} 
+solve(K) %*% G
+```
+
+- (viii) $v^T \times W$
+
+```{r error = TRUE} 
+t(v) * W
+```
+
+- (ix) $W \times W^{-1} - I_5$
+
+```{r} 
+W * solve(W) - (W %*% solve(W))
+```
+
+- (x) $(X \times K)^{-1}$
+
+```{r error = TRUE} 
+solve(X * K)
+```
+
+## Q5 - Com base nas variáveis criadas na questão 2, pede-se:
+
+i) calcule o determinante das matrizes $W$, $K$ e $G$
+
+```{r}
+det(W)
+```
+
+```{r error = TRUE}
+det(K)
+```
+
+```{r}
+det(G)
+```
+
+
+ii) crie uma variável que guarde os elementos da segunda e terceira linhas de $Z$ para todas as colunas
+
+```{r}
+(secthirdlines <- Z[2:3, ])
+```
+
+iii) crie uma variável que guarde o elemento da terceira linha e quarta coluna de $W$ 
+
+```{r}
+(thirdfourthdlines <- W[3:4, ])
+```
+
+iv) crie uma variável que guarde os elementos de $W$ que são divisíveis por 4.
+
+```{r}
+(divisible_by_four <- W[W %% 4 ==0])
+
+# purrr::keep(W, ~ .x %%4 == 0)
+```
+
+v) crie uma variável que guarde o resto da divisão dos elementos de $G$ por 2.
+
+```{r}
+(rest_division_by_two <- G %% 2)
+```
+
+vi) crie uma variável que guarde o inteiro da divisão dos elementos de $Z$ por 4. 
+
+```{r}
+(int_division_by_four <- Z %/% 4)
+```
+
