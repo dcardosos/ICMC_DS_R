@@ -1,0 +1,327 @@
+---
+title: "Modelos de Regressão"
+author: "Douglas Cardoso"
+date: "9/29/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Há uma certa relação entre as variáveis e se eu conseguir achar um modelo para essa relação, eu consigo fazer previsões. O objetivo é encontrar o melhor modelo que se ajusta aos dados.
+
+## Modelo linear
+
+Encontrar o melhor valor de $\beta_0$ e $\beta_1$ que minimizem o erro. A difererença entre o valor que estimei e a observação é o **resíduo**, isto é, o erro. Uma das propriedades fundamentais é que o modelo assumo que os pontos estão distribuídos normalmente. 
+
+$$
+y = \beta_0 + \beta_1 x + \epsilon
+$$
+
+- $\beta_0$: intercepto, o ponto que corta o eixo $y$
+- $\beta_1$: inclinação da reta
+
+Como os betas podem não ser suficiente para explicar o modelo, inclui-se o erro $\epsilon_i$, que representa as informações que meu modelo não consegue captar. Assume-se que o erro tem média 0 e variância $\sigma^2$, ou seja, uma distribuição normal. Portanto, ao redor da reta do modelo há uma curva normal, ou seja, o valor que eu observo é uma realização dessa distribuição normal centrada nessa reta, com a probabilidade maior da observação cair em cima da reta, visto que o máximo da distribuição, a média, vai ser onde está o valor que foi predito.
+
+Assumindo como variáveis aleatórias:
+
+- $Y$ = variável resposta
+- $X$ = preditor
+
+Calculando a esperança em ambos os lados da equação:
+
+$$
+E[Y] = E[\beta_0 + \beta_1 X + \epsilon]
+$$
+
+Como a esperança é uma função linear:
+$$
+E[Y] = E[\beta_0] + E[\beta_1X] + E[\epsilon]
+$$
+
+Como temos uma constante, podemos retirá-la
+
+$$
+E[Y] = \beta_0 + \beta_1E[X] + E[\epsilon]
+$$
+E, na verdade, o último termo $E[\epsilon] = 0$, visto que assumi que a média é igual a zero.
+
+$$
+\beta_0 = E[Y] - \beta_1 E[X]
+$$
+
+Calculando a covariância entre $X$ e $Y$:
+
+$$
+Cov(X,Y) = Cov(X, \beta_0 + \beta_1X) = Cov(X, \beta_0) + Cov(X, \beta_1)
+$$
+
+Lembrando que:
+
+$$
+Cov(X,Y) = E[XY] - E[X]E[Y]
+$$
+
+Assim:
+
+$$
+ = \beta_0 Cov(X,1) + \beta_1 Cov(X,X) = Cov(X,Y) =\beta_1 Var(X)
+$$
+E temos:
+
+$$
+ \beta_1 = \frac{Cov(X,Y)}{V(X)}
+$$
+$$
+\beta_0 = E[Y] - \beta_1 E[X]
+$$
+
+Com essas equações, posso usar os estimadores de máxima verossimilhança para a média e para a covariância.
+
+Para média:
+$$
+\overline{x} = \frac{1}{n} \sum_{i = 1}^n X_i,
+$$
+
+e para a covariância:
+$$
+S_{XY} = \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})(Y_i - \overline{Y})
+$$
+
+Ficamos com
+$$
+\hat{\beta_1} = \frac{S_{XY}}{S_XX}
+$$
+
+e
+
+$$
+\hat{\beta_1} = \hat{Y} - \hat{\beta_1}\overline{X}
+$$
+
+Vamos entender a aplicação prática para entender a estimação desses coeficientes.
+
+```{r}
+
+estimate_coef <- function(x, y){
+  
+  tibble::tibble(
+    x = x,
+    y = y,
+    m_x = mean(x),
+    m_y = mean(y),
+    S_xy = (x - m_x) * (y - m_y),
+    S_xx = (x - m_x)**2) |>
+    dplyr::summarise(
+      b_1 = sum(S_xy) / sum(S_xx),
+      b_0 = m_y - b_1 * m_x) |>
+    dplyr::distinct()
+}
+
+
+x <- c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+y <- c(1, 3, 2, 5, 7, 8, 8, 9, 10, 12)
+
+(da <- estimate_coef(x, y))
+
+```
+
+### Criação da própria reta
+```{r}
+tibble::tibble(
+  x = x,
+  y = y) |>
+  ggplot2::ggplot(ggplot2::aes(x,y)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_abline(intercept = da$b_0, slope = da$b_1, color = 'red') +
+  ggplot2::theme_minimal()
+```
+
+### Reta com `geom_smooth`
+
+```{r}
+tibble::tibble(
+  x = x,
+  y = y) |>
+  ggplot2::ggplot(ggplot2::aes(x,y)) +
+  ggplot2::geom_point() +
+  ggplot2::theme_minimal() +
+  ggplot2::geom_smooth(method = 'lm')
+```
+
+Agora, vamos verificar o quão bom é essa reta. Para isso, faremos a variância de $Y$.
+
+$$
+V(Y) = V(\beta_0 + \beta_1X + \epsilon) = \beta_1^2V(X) + V(\epsilon)
+$$
+
+$$
+\frac{V(Y) - V(\epsilon)}{V(Y)} = \frac{\beta_1^2 V(X)}{V(Y)}
+$$
+
+$$
+R^2 = \frac{\beta_1^2 V(X)}{V(Y)}
+$$
+
+$$
+R^2 = \frac{[Cov(X,Y)]^2}{V(X) V(Y)} = \frac{S_{XY}^2}{S_{XX} S_{YY}}
+$$
+
+Aplicações em R:
+
+```{r}
+R2 <- function(x,y){
+  
+  tibble::tibble(
+    x = x,
+    y = y,
+    m_x = mean(x),
+    m_y = mean(y),
+    S_xy = (x - m_x) * (y - m_y),
+    S_xx = (x - m_x)**2,
+    S_yy = (y - m_y)**2) |>
+    dplyr::summarise(R2 = sum(S_xy)**2 / (sum(S_xx) * sum(S_yy))) |>
+    dplyr::mutate(cat = glue::glue("R2 = {round(R2, 4)}")) |>
+    dplyr::pull(cat)
+  
+}
+
+R2(x,y)
+```
+
+Regressão linaer com `tidymodels`
+
+```{r}
+library(tidymodels)
+
+data <- tibble::tibble(x = x, y = y)
+
+lm_model <- linear_reg() %>% 
+            set_engine('lm') %>% 
+            set_mode('regression')
+  
+  
+lm_fit <- lm_model %>% 
+          fit(y ~ x, data = data)
+
+summary(lm_fit$fit)
+```
+
+Nesse `summary` podemos analisar também já os testes de hipóteses, verificando se os coeficientes são relevantes para o modelo.
+
+## Modelos multivariados
+
+Temos mais uma variável independentes. Estamos interessados na influência de várias variáveis. Em uma regressão linear múltipla não estamos mais interessados em ajustar uma reta, e sim um *plano*. 
+$$
+Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \ ... \ + \beta_d X_d
+$$
+
+Aqui também objetivamos minimizar o erro:
+
+$$
+RSS = \sum_{i = 1}^n (y_i - \hat{y_i})^2 = \sum_{i = 1}^n \epsilon_i^2
+$$
+
+## Aplicação - predizendo o preço de casas
+
+Feito com base no artigo: https://www.gmudatamining.com/lesson-10-r-tutorial.html
+```{r}
+
+da <- readr::read_csv("../dados/BostonHousing.csv")
+
+# train test split
+da_split <- rsample::initial_split(da, prop = 0.75)
+da_training <- da_split |> rsample::training()
+da_test <- da_split |> rsample::testing()
+
+# model specification
+lm_model <- parsnip::linear_reg() |>
+            parsnip::set_engine("lm") |>
+            parsnip::set_mode("regression")
+
+# fitting the model
+lm_fit <- lm_model |>
+          parsnip::fit(medv ~ ., data = da_training)
+
+summary(lm_fit$fit)
+```
+
+```{r}
+par(mfrow=c(2,2)) # plot all 4 plots in one
+plot(lm_fit$fit,
+     pch = 16,
+     col = '#006EA1')
+```
+
+```{r}
+parsnip::tidy(lm_fit)
+```
+
+```{r}
+# metrics on training data
+parsnip::glance(lm_fit)
+```
+
+```{r}
+# variable importance
+vip::vip(lm_fit)
+```
+
+```{r}
+# evaluating test set accuracy
+predict(lm_fit, new_data = da_test)
+```
+
+```{r}
+# joining all
+
+da_test_results <- predict(lm_fit, new_data = da_test) |>
+                   dplyr::bind_cols(da_test)
+
+da_test_results
+```
+
+```{r}
+# RMSE on test set
+
+yardstick::rmse(da_test_results,
+                truth = medv,
+                estimate = .pred)
+```
+
+```{r}
+# R2 on test set
+
+yardstick::rsq(da_test_results,
+               truth = medv,
+               estimate = .pred)
+```
+
+```{r}
+# R2 PLOT
+
+ggplot2::ggplot(data = da_test_results,
+                ggplot2::aes(x = .pred, y = medv)) +
+  ggplot2::geom_point(color = "#006EA1") +
+  ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange") +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Linear Regression Results - Advertising Test Set",
+                x = "Predicted `medv`",
+                y = "Actual `medv`")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
