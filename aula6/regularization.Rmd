@@ -1,0 +1,47 @@
+---
+title: "Regularização"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regularização
+
+- Suaviza a curva, evitando overfitting
+
+$$
+minimize\ ||X\beta - y||^2_2 + \gamma\ ||\beta||^2_2
+$$
+- Onde $\gamma \geq 0$, é o parâmetro de regularização
+- Para $\gamma = 0$, temos o caso sem regularização
+- Se $\gamma \rightarrow \infty$, os parâmetros se aproximam de zero
+
+- Método Ridge Regression: evitar overfitting diminuindo os coeficientes
+- LASSO: seleciona alguns valores para serem diferentes de zero enquanto que outros são exatamente iguais a zero, ou seja, pode ser usado para selecionar atributos
+
+
+## Avaliação
+
+Métricas para balancear a complexidade e precisão do modelo (conjunto de S atributos):
+
+- Coeficiente R2 ajustado
+
+$$
+R^2 = 1 - (1 - R^2) \frac{n - 1}{n - | S | - 1}
+$$
+
+- BIC (Bayesian information criterion)
+
+Assumo que os modelos são os melhores e acha o mais próximo da realidade
+$$
+BIC = log(likelihood) - \frac{ |S| }{2} log\ n
+$$
+
+- AIC: (Akaike information criterion)
+
+Assumo que o melhor modelo não é conhecido e tenta selecionar o melhor modelo que descreve os dados, sabendo que não é o melhor. 
+$$
+ACI = log(likelihood) + |S|
+$$
